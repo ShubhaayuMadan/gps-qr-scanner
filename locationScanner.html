@@ -5,8 +5,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
     <script>
-        // Your JavaScript code will be added here
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBob0yrBT5xgxYrBzmxOt1ofHmkFOREpvg",
             authDomain: "qr-code-d740a.firebaseapp.com",
@@ -36,6 +37,7 @@
             "<br>Longitude: " + longitude;
             document.getElementById("latitude").value = latitude;
             document.getElementById("longitude").value = longitude;
+            getAreaName(latitude, longitude);
         }
 
         function showError(error) {
@@ -55,6 +57,22 @@
             }
         }
 
+        function getAreaName(latitude, longitude) {
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(latitude, longitude);
+            geocoder.geocode({'location': latlng}, function(results, status) {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        document.getElementById("areaName").value = results[0].formatted_address;
+                    } else {
+                        alert('No results found');
+                    }
+                } else {
+                    alert('Geocoder failed due to: ' + status);
+                }
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             getLocation();
             document.getElementById("getUserData").addEventListener("submit", submitForm);
@@ -66,15 +84,17 @@
             var name = getElementVal('username');
             var latitude = getElementVal('latitude');
             var longitude = getElementVal('longitude');
+            var areaName = getElementVal('areaName');
 
-            saveGeolocation(name, latitude, longitude);
+            saveGeolocation(name, latitude, longitude, areaName);
         }
 
-        const saveGeolocation = (name, latitude, longitude) => {
+        const saveGeolocation = (name, latitude, longitude, areaName) => {
             db.collection("geolocations").add({
                 name: name,
                 latitude: latitude,
-                longitude: longitude
+                longitude: longitude,
+                areaName: areaName
             })
             .then(() => {
                 alert("Data successfully saved!");
@@ -106,6 +126,10 @@
             <div class="form-group">
                 <label for="longitude">Longitude</label>
                 <input type="text" class="form-control" id="longitude" readonly>
+            </div>
+            <div class="form-group">
+                <label for="areaName">Area Name</label>
+                <input type="text" class="form-control" id="areaName" readonly>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
