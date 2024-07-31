@@ -82,21 +82,17 @@
 
         function submitForm(e) {
             e.preventDefault();
-
-            var name = getElementVal('username');
             var latitude = getElementVal('latitude');
             var longitude = getElementVal('longitude');
-            var areaName = getElementVal('areaName');
+            
 
-            saveGeolocation(name, latitude, longitude, areaName);
+            saveGeolocation(latitude, longitude);
         }
 
-        const saveGeolocation = (name, latitude, longitude, areaName) => {
+        const saveGeolocation = (latitude, longitude) => {
             db.collection("geolocations").add({
-                name: name,
                 latitude: latitude,
                 longitude: longitude,
-                areaName: areaName
             })
             .then(() => {
                 alert("Data successfully saved!");
@@ -118,20 +114,12 @@
         
         <form id="getUserData">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" placeholder="Enter Username" required>
-            </div>
-            <div class="form-group">
                 <label for="latitude">Latitude</label>
                 <input type="text" class="form-control" id="latitude" readonly>
             </div>
             <div class="form-group">
                 <label for="longitude">Longitude</label>
                 <input type="text" class="form-control" id="longitude" readonly>
-            </div>
-            <div class="form-group">
-                <label for="areaName">Area Name</label>
-                <input type="text" class="form-control" id="areaName" readonly>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
